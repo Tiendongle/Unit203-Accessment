@@ -12,3 +12,24 @@
   width: 100%;
 }
 
+.pricingData {
+  width: 100%;
+}
+
+.pricingData ul {
+  font-size: 0.75rem;
+  list-style-type: none;
+  
+  li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    color: var(--BLACK);
+  
+    &.pricingData_totals {
+      color: var(--BLUE);
+      font-weight: 700;
+    }
+  }
+}
+

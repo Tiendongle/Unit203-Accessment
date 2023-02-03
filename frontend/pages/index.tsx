@@ -39,6 +39,11 @@ const lineItems: CartItemProps[] = [
   },
 ];
 
+const SUBTOTAL = 2094.97;
+const HST = 272.3461;
+const TOTAL = 2382.3161;
+const ESTIMATED_DELIVERY = "Nov 24, 2021";
+
 export default function Home() {
   return (
     <>
@@ -55,6 +60,14 @@ export default function Home() {
             lineItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} />)
           }
         </div>
+        <div className={styles.pricingData}>
+            <ul>
+              <li><p>Subtotal</p><p>${SUBTOTAL.toFixed(2)}</p></li>
+              <li><p>Taxes (estimated)</p><p>${HST.toFixed(2)}</p></li>
+              <li><p>Shipping</p><p>FREE</p></li>
+              <li className={styles.pricingData_totals}><p>Total</p><p>{TOTAL.toFixed(2)}</p></li>
+            </ul>
+          </div>
       </main>
     </>
   )
