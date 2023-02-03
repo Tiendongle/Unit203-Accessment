@@ -55,6 +55,13 @@ export default function Home() {
       total: TOTAL,
     }
   });
+
+  const removeLineItem = (lineItemId: number) => {
+    setCartState((current) => ({
+      ...current,
+      cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
+    }))
+  };
   
   return (
     <>
@@ -68,7 +75,7 @@ export default function Home() {
         <h1>Your Cart</h1>
         <div className={styles.cart}>
           {
-            lineItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} />)
+            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={removeLineItem} />)
           }
         </div>
         <div className={styles.pricingData}>

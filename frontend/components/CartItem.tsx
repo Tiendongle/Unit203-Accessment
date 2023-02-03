@@ -3,14 +3,19 @@ import styles from '@/styles/CartItems.module.css'
 import { CartItemProps } from "@/types"
 import Image from 'next/image'
 
-export const CartItem: React.FC<CartItemProps> = ({
+type Props = CartItemProps & {
+  removeItemFunction: (id: number) => void;
+}
+
+export const CartItem: React.FC<Props> = ({
   id,
   title,
   price,
   quantity = 1,
   image,
   swatchColor,
-  swatchTitle
+  swatchTitle,
+  removeItemFunction
 }) => {
   return (
     <div className={styles.cartItem_container}>
@@ -37,7 +42,12 @@ export const CartItem: React.FC<CartItemProps> = ({
         <p className={styles.pricing}>${price}</p>
         <div>
           <p className={styles.deliveryTime}>Estimated Delivery Date: Dec 2 - Dec 15</p>
-          <button className={styles.removeBtn}>Remove</button>
+          <button 
+            className={styles.removeBtn}
+            onClick={() => removeItemFunction && removeItemFunction(id) }
+          >
+            Remove
+          </button>
         </div>
       </div>
     </div>
