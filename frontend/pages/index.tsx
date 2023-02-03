@@ -2,16 +2,9 @@ import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 
+import { CartItemProps } from '@/types';
+import { CartItem } from '@/components/CartItem';
 
-export interface CartItemProps {
-  id: number;
-  title: string;
-  price: number;
-  quantity?: number;
-  image: string;
-  swatchColor: string;
-  swatchTitle: string;
-}
 
 const lineItems: CartItemProps[] = [
   {
@@ -56,7 +49,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        
+        <div className={styles.cart}>
+          {
+            lineItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} />)
+          }
+        </div>
       </main>
     </>
   )
