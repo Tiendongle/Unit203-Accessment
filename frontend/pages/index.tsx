@@ -49,6 +49,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <h1>Your Cart</h1>
         <div className={styles.cart}>
           {
             lineItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} />)
