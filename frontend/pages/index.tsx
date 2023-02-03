@@ -59,7 +59,7 @@ export default function Home() {
     }
   });
 
-  const CARTACTIONS = {
+  const CART_ACTIONS = {
     removeLineItem: (lineItemId: number) => {
       setCartState((current) => ({
         ...current,
@@ -87,7 +87,7 @@ export default function Home() {
         <h1>Your Cart</h1>
         <div className={styles.cart}>
           {
-            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={CARTACTIONS.removeLineItem} />)
+            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={CART_ACTIONS.removeLineItem} />)
           }
         </div>
         <div className={styles.pricingData}>
@@ -99,7 +99,7 @@ export default function Home() {
           </ul>
         </div>
         <button
-          onClick={()=> CARTACTIONS.addLineItem(generateRandomItem())}
+          onClick={()=> CART_ACTIONS.addLineItem(generateRandomItem())}
         >
           Add
         </button>
