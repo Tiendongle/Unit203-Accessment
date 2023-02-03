@@ -45,6 +45,9 @@ const HST = 272.3461;
 const TOTAL = 2382.3161;
 const ESTIMATED_DELIVERY = "Nov 24, 2021";
 
+// Helper Function to generate a random item
+const generateRandomItem = () => Math.floor(Math.random() * lineItems.length);
+
 export default function Home() {
   // Basic State function. Should be converted to use Actions and Reducer given more time.
   const [cartState, setCartState] = useState<CartState>({
@@ -56,11 +59,20 @@ export default function Home() {
     }
   });
 
-  const removeLineItem = (lineItemId: number) => {
-    setCartState((current) => ({
-      ...current,
-      cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
-    }))
+  const CARTACTIONS = {
+    removeLineItem: (lineItemId: number) => {
+      setCartState((current) => ({
+        ...current,
+        cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
+      }))
+    },
+    addLineItem: (lineItem: number) => {
+      if( lineItem > lineItems.length ) return;
+      setCartState((current) => ({
+        ...current,
+        cartItems: [...current.cartItems, lineItems[lineItem]],
+      }))
+    }
   };
   
   return (
@@ -75,17 +87,22 @@ export default function Home() {
         <h1>Your Cart</h1>
         <div className={styles.cart}>
           {
-            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={removeLineItem} />)
+            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={CARTACTIONS.removeLineItem} />)
           }
         </div>
         <div className={styles.pricingData}>
-            <ul>
-              <li><p>Subtotal</p><p>${SUBTOTAL.toFixed(2)}</p></li>
-              <li><p>Taxes (estimated)</p><p>${HST.toFixed(2)}</p></li>
-              <li><p>Shipping</p><p>FREE</p></li>
-              <li className={styles.pricingData_totals}><p>Total</p><p>{TOTAL.toFixed(2)}</p></li>
-            </ul>
-          </div>
+          <ul>
+            <li><p>Subtotal</p><p>${SUBTOTAL.toFixed(2)}</p></li>
+            <li><p>Taxes (estimated)</p><p>${HST.toFixed(2)}</p></li>
+            <li><p>Shipping</p><p>FREE</p></li>
+            <li className={styles.pricingData_totals}><p>Total</p><p>{TOTAL.toFixed(2)}</p></li>
+          </ul>
+        </div>
+        <button
+          onClick={()=> CARTACTIONS.addLineItem(generateRandomItem())}
+        >
+          Add
+        </button>
       </main>
     </>
   )
