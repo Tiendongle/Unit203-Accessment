@@ -12,7 +12,6 @@ export const CartItem: React.FC<CartItemProps> = ({
   swatchColor,
   swatchTitle
 }) => {
-  console.log(styles)
   return (
     <div className={styles.cartItem_container}>
       <div className={styles.image}>
