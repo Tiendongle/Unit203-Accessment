@@ -7,3 +7,12 @@ export interface CartItemProps {
   swatchColor: string;
   swatchTitle: string;
 }
+
+export interface CartState {
+  cartItems: CartItemProps[];
+  price: {
+    subtotal: number;
+    taxes: number;
+    total: number;
+  }
+}
