@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
@@ -52,7 +52,7 @@ const ESTIMATED_DELIVERY = "Nov 24, 2021";
 const generateRandomItem = () => Math.floor(Math.random() * lineItems.length);
 
 export default function Home() {
-  const CART_ACTIONS = {
+  const CART_ACTIONS = useMemo(() => ({
     removeLineItem: (lineItemId: number) => {
       if (!lineItemId) return;
 
@@ -70,8 +70,8 @@ export default function Home() {
       }))
     },
     calculateFees: () => {
-      if(!cartState.cartItems.length) return;
       setCartState((current) => {
+        if(!current.cartItems.length) return { ...current };
         const NEW_SUBTOTAL = current.cartItems.reduce((acc, {price}) => acc + price, current?.cartItems[0]?.price || 0);
         const TAX_TOTAL = NEW_SUBTOTAL * TAX_RATE;
         const NEW_SHIPPING = NEW_SUBTOTAL ? SHIPPING : 0;
@@ -86,7 +86,7 @@ export default function Home() {
         }
       })
     }
-  };
+  }), []);
 
   // Basic State function. Should be converted to use Actions and Reducer given more time.
   const [cartState, setCartState] = useState<CartState>({
