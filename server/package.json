@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "name": "api-server",
+  "version": "1.0.0",
+  "description": "API server to retrieve cart data for Unit203 Cart test application",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tien Le",
+  "license": "ISC"
+}
