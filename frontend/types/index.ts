@@ -10,7 +10,7 @@ export interface CartItemProps {
 
 export interface CartState {
   cartItems: CartItemProps[];
-  price: {
+  price?: {
     subtotal: number;
     taxes: number;
     shipping: number;

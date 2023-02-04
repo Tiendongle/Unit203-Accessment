@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
@@ -52,17 +52,6 @@ const ESTIMATED_DELIVERY = "Nov 24, 2021";
 const generateRandomItem = () => Math.floor(Math.random() * lineItems.length);
 
 export default function Home() {
-  // Basic State function. Should be converted to use Actions and Reducer given more time.
-  const [cartState, setCartState] = useState<CartState>({
-    cartItems: lineItems,
-    price: {
-      subtotal: SUBTOTAL,
-      taxes: HST,
-      shipping: SHIPPING,
-      total: TOTAL,
-    }
-  });
-
   const CART_ACTIONS = {
     removeLineItem: (lineItemId: number) => {
       if (!lineItemId) return;
@@ -85,7 +74,7 @@ export default function Home() {
       setCartState((current) => {
         const NEW_SUBTOTAL = current.cartItems.reduce((acc, {price}) => acc + price, current?.cartItems[0]?.price || 0);
         const TAX_TOTAL = NEW_SUBTOTAL * TAX_RATE;
-        const NEW_SHIPPING = NEW_SUBTOTAL ? SHIPPING : 0
+        const NEW_SHIPPING = NEW_SUBTOTAL ? SHIPPING : 0;
         return {
           ...current,
           price: {
@@ -98,6 +87,16 @@ export default function Home() {
       })
     }
   };
+
+  // Basic State function. Should be converted to use Actions and Reducer given more time.
+  const [cartState, setCartState] = useState<CartState>({
+    cartItems: lineItems,
+  });
+
+  // Calculate Cart Items on initial load
+  useEffect(() => {
+    CART_ACTIONS.calculateFees();
+  }, [CART_ACTIONS]);
   
   return (
     <>
@@ -112,23 +111,23 @@ export default function Home() {
         <div className={styles.cart}>
           {
             cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={(id) => {
-              CART_ACTIONS.removeLineItem(id)
-              CART_ACTIONS.calculateFees()
+              CART_ACTIONS.removeLineItem(id);
+              CART_ACTIONS.calculateFees();
             }} />)
           }
         </div>
-        <div className={styles.pricingData}>
+        {cartState.price && <div className={styles.pricingData}>
           <ul>
             <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
             <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
             <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
             <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
           </ul>
-        </div>
+        </div>}
         <button
           onClick={()=> {
             CART_ACTIONS.addLineItem(generateRandomItem());
-            CART_ACTIONS.calculateFees()
+            CART_ACTIONS.calculateFees();
           }}
         >
           Add
