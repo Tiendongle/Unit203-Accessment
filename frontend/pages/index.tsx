@@ -43,6 +43,9 @@ const lineItems: CartItemProps[] = [
 const SUBTOTAL = 2094.97;
 const HST = 272.3461;
 const TOTAL = 2382.3161;
+const SHIPPING = 15;
+
+const TAX_RATE = 0.13;
 const ESTIMATED_DELIVERY = "Nov 24, 2021";
 
 // Helper Function to generate a random item
@@ -55,12 +58,15 @@ export default function Home() {
     price: {
       subtotal: SUBTOTAL,
       taxes: HST,
+      shipping: SHIPPING,
       total: TOTAL,
     }
   });
 
   const CART_ACTIONS = {
     removeLineItem: (lineItemId: number) => {
+      if (!lineItemId) return;
+
       setCartState((current) => ({
         ...current,
         cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
@@ -68,10 +74,28 @@ export default function Home() {
     },
     addLineItem: (lineItem: number) => {
       if( lineItem > lineItems.length ) return;
+
       setCartState((current) => ({
         ...current,
         cartItems: [...current.cartItems, lineItems[lineItem]],
       }))
+    },
+    calculateFees: () => {
+      if(!cartState.cartItems.length) return;
+      setCartState((current) => {
+        const NEW_SUBTOTAL = current.cartItems.reduce((acc, {price}) => acc + price, current?.cartItems[0]?.price || 0);
+        const TAX_TOTAL = NEW_SUBTOTAL * TAX_RATE;
+        const NEW_SHIPPING = NEW_SUBTOTAL ? SHIPPING : 0
+        return {
+          ...current,
+          price: {
+            subtotal: NEW_SUBTOTAL,
+            taxes: TAX_TOTAL,
+            shipping: NEW_SHIPPING,
+            total: NEW_SUBTOTAL + NEW_SHIPPING + TAX_TOTAL,
+          }
+        }
+      })
     }
   };
   
@@ -87,19 +111,25 @@ export default function Home() {
         <h1>Your Cart</h1>
         <div className={styles.cart}>
           {
-            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={CART_ACTIONS.removeLineItem} />)
+            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={(id) => {
+              CART_ACTIONS.removeLineItem(id)
+              CART_ACTIONS.calculateFees()
+            }} />)
           }
         </div>
         <div className={styles.pricingData}>
           <ul>
-            <li><p>Subtotal</p><p>${SUBTOTAL.toFixed(2)}</p></li>
-            <li><p>Taxes (estimated)</p><p>${HST.toFixed(2)}</p></li>
-            <li><p>Shipping</p><p>FREE</p></li>
-            <li className={styles.pricingData_totals}><p>Total</p><p>{TOTAL.toFixed(2)}</p></li>
+            <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
+            <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
+            <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
+            <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
           </ul>
         </div>
         <button
-          onClick={()=> CART_ACTIONS.addLineItem(generateRandomItem())}
+          onClick={()=> {
+            CART_ACTIONS.addLineItem(generateRandomItem());
+            CART_ACTIONS.calculateFees()
+          }}
         >
           Add
         </button>

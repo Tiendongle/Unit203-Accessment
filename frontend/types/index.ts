@@ -13,6 +13,7 @@ export interface CartState {
   price: {
     subtotal: number;
     taxes: number;
+    shipping: number;
     total: number;
   }
 }
