@@ -40,9 +40,58 @@ const lineItems = [
   },
 ];
 
+const DELIVERY_DATES = [
+  {
+    postal: "V",
+    ids: [2],
+    estimatedDeliveryDate: "Nov 24, 2021"
+  },
+  {
+    postal: "V",
+    ids: [1,3],
+    estimatedDeliveryDate: "Nov 19, 2021"
+  },
+  {
+    postal: "M",
+    ids: [2,3],
+    estimatedDeliveryDate: "Nov 22, 2021"
+  },
+  {
+    postal: "M",
+    ids: [1],
+    estimatedDeliveryDate: "Dec 19, 2021"
+  },
+  {
+    postal: "K",
+    ids: [1,2,3],
+    estimatedDeliveryDate: "Dec 24, 2021"
+  },
+]
+
 app.get('/', (req, res) => {
   res.send(lineItems);
 });
+
+app.get('/delivery/:postal', (req, res) => {
+  const postal = req.params.postal.toUpperCase() || 'V5N';
+  
+  // Filter Delivery Time Based on postal code
+  const DELIVERY_AREA_DATA = DELIVERY_DATES.filter( deliveryAreas => deliveryAreas.postal === postal[0]);
+
+  // Find IDs for the delivery areas, then checking if the item's id is in the delivery area.
+  // Return first result
+  const estimatedDeliveryDate = (item) => DELIVERY_AREA_DATA.length > 0 ? DELIVERY_AREA_DATA.find(
+    ({ ids }) => ids.find(id => id === item.id)
+  ).estimatedDeliveryDate : 'Not Available';
+  
+  const UpdatedLineItems = lineItems.map(( item ) => ({
+    ...item,
+    estimatedDeliveryDate: estimatedDeliveryDate(item),
+  }));
+
+  res.send({ lineItems: UpdatedLineItems});
+});
+
 
 app.listen(port, () => {
   console.log(`Server is listening on port: ${port}`);

@@ -6,6 +6,7 @@ export interface CartItemProps {
   image: string;
   swatchColor: string;
   swatchTitle: string;
+  estimatedDeliveryDate?: string;
 }
 
 export interface CartState {

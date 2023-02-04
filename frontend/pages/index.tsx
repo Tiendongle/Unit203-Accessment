@@ -6,52 +6,13 @@ import styles from '@/styles/Home.module.scss'
 import { CartState, CartItemProps } from '@/types';
 import { CartItem } from '@/components/CartItem';
 
-
-const lineItems: CartItemProps[] = [
-  {
-    id: 1,
-    title: "Grey Sofa",
-    price: 499.99,
-    quantity: 1,
-    image:
-    "https://www.cozey.ca/_next/image?url=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0277%2F3057%2F5462%2Fproducts%2F2_Single_shot_DARK_GREY_OFF_OFF_SLOPE_17f0f115-11f8-4a78-b412-e9a2fea4748d.png%3Fv%3D1629310667&w=1920&q=75",
-    swatchColor: "#959392",
-    swatchTitle: "Grey"
-  },
-  {
-    id: 2,
-    title: "Blue Sofa",
-    price: 994.99,
-    quantity: 1,
-    image:
-    "https://www.cozey.ca/_next/image?url=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0277%2F3057%2F5462%2Fproducts%2F3_Seater_SofaSofa_Ottoman_Off_Arm_Configuration_Two_Arms_Arm_Design_Slope_Chaise_Off_Fabric_Navy_Blue2.png%3Fv%3D1629231450&w=1920&q=75",
-    swatchColor: "#191944",
-    swatchTitle: "Blue"
-  },
-  {
-    id: 3,
-    title: "White Sofa",
-    price: 599.99,
-    quantity: 1,
-    image:
-    "https://www.cozey.ca/_next/image?url=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0277%2F3057%2F5462%2Fproducts%2F2_Single_shot_IVORY_OFF_OFF_SLOPE_5379af1f-9318-4e37-b514-962d33d1ce64.png%3Fv%3D1629231450&w=1920&q=75",
-    swatchColor: "#F8F1EC",
-    swatchTitle: "White"
-  },
-];
-
-const SUBTOTAL = 2094.97;
-const HST = 272.3461;
-const TOTAL = 2382.3161;
 const SHIPPING = 15;
-
 const TAX_RATE = 0.13;
-const ESTIMATED_DELIVERY = "Nov 24, 2021";
 
 // Helper Function to generate a random item
-const generateRandomItem = () => Math.floor(Math.random() * lineItems.length);
+const generateRandomItem = (maxLength: number) => Math.floor(Math.random() * maxLength);
 
-export default function Home() {
+export default function Home({ lineItems = [] }) {
   const CART_ACTIONS = useMemo(() => ({
     removeLineItem: (lineItemId: number) => {
       if (!lineItemId) return;
@@ -85,6 +46,23 @@ export default function Home() {
           }
         }
       })
+    },
+    estimatedDeliveryDate: async (postalCode: string = '') => {
+      if(!postalCode) return;
+      const API_URL = 'http://localhost:3001';
+      const API_ENDPOINT = `delivery`;
+      const res = await fetch(`${API_URL}/${API_ENDPOINT}/${postalCode}`).then(res => res.json());
+      const estimatedDeliveryDates = await res.lineItems;
+      // console.log(estimatedDeliveryDates)/
+      setCartState((current) => {
+        return {
+          ...current,
+          cartItems: current.cartItems.map(item => ({
+            ...item,
+            estimatedDeliveryDate: estimatedDeliveryDates.find( (deliveryItem: CartItemProps) => deliveryItem.id === item.id ).estimatedDeliveryDate
+          })),
+        }
+      })
     }
   }), []);
 
@@ -108,31 +86,45 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <h1>Your Cart</h1>
-        <div className={styles.cart}>
+        {cartState?.cartItems && <div className={styles.cart}>
           {
             cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={(id) => {
               CART_ACTIONS.removeLineItem(id);
               CART_ACTIONS.calculateFees();
             }} />)
           }
-        </div>
+        </div>}
         {cartState.price && <div className={styles.pricingData}>
           <ul>
             <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
             <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
             <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
+            <li><label>Postal Code</label><input onChange={(event) => {CART_ACTIONS.estimatedDeliveryDate( event.target.value )}} /></li>
             <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
           </ul>
         </div>}
         <button
           onClick={()=> {
-            CART_ACTIONS.addLineItem(generateRandomItem());
+            CART_ACTIONS.addLineItem(generateRandomItem(cartState.cartItems.length));
             CART_ACTIONS.calculateFees();
           }}
         >
           Add
         </button>
+        
       </main>
     </>
   )
+}
+
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const API_URL = 'http://localhost:3001';
+  const API_ENDPOINT = '';
+  
+  const res = await fetch(`${API_URL}/${API_ENDPOINT}`);
+  const data = await res.json()
+
+  // Pass data to the page via props
+  return { props: { lineItems: data } }
 }

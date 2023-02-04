@@ -15,6 +15,7 @@ export const CartItem: React.FC<Props> = ({
   image,
   swatchColor,
   swatchTitle,
+  estimatedDeliveryDate,
   removeItemFunction
 }) => {
   return (
@@ -41,7 +42,7 @@ export const CartItem: React.FC<Props> = ({
       <div className={styles.secondaryDetails}>
         <p className={styles.pricing}>${price}</p>
         <div>
-          <p className={styles.deliveryTime}>Estimated Delivery Date: Dec 2 - Dec 15</p>
+          <p className={styles.deliveryTime}>Estimated Delivery Date: {estimatedDeliveryDate || 'Dec 2 - Dec 15'}</p>
           <button 
             className={styles.removeBtn}
             onClick={() => removeItemFunction && removeItemFunction(id) }
