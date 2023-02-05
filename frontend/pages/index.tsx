@@ -15,12 +15,12 @@ const generateRandomItem = (maxLength: number) => Math.floor(Math.random() * max
 
 export default function Home({ lineItems = [] }) {
   const CART_ACTIONS = useMemo(() => ({
-    removeLineItem: (lineItemId: number) => {
-      if (!lineItemId) return;
+    removeLineItem: (index: number) => {
+      if (index === undefined) return;
 
       setCartState((current) => ({
         ...current,
-        cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
+        cartItems: current.cartItems.filter((_, key) => key !== index )
       }))
       CART_ACTIONS.calculateFees();
     },
@@ -92,8 +92,8 @@ export default function Home({ lineItems = [] }) {
         <h1>Your Cart</h1>
         {cartState?.cartItems && <div className={styles.cart}>
           {
-            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={(id) => {
-              CART_ACTIONS.removeLineItem(id);
+            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={() => {
+              CART_ACTIONS.removeLineItem(key);
               CART_ACTIONS.calculateFees();
             }} />)
           }
