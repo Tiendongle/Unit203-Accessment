@@ -3,7 +3,6 @@
 - NextJS + Typescript
 - Express
 
-
 # To start API Server
 - In your CLI, `cd server` 
 - Run the command `node index.js` to start the server
