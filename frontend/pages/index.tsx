@@ -20,7 +20,7 @@ export default function Home({ lineItems = [] }) {
 
       setCartState((current) => ({
         ...current,
-        cartItems: current.cartItems.filter((_, key) => key !== index )
+        cartItems: [...current.cartItems.filter((_, key) => key !== index )]
       }))
       CART_ACTIONS.calculateFees();
     },
@@ -38,8 +38,7 @@ export default function Home({ lineItems = [] }) {
     },
     calculateFees: () => {
       setCartState((current) => {
-        if(!current.cartItems.length) return { ...current };
-        const NEW_SUBTOTAL = current.cartItems.reduce((acc, {price}) => acc + price, current?.cartItems[0]?.price || 0);
+        const NEW_SUBTOTAL = current.cartItems.reduce((acc, {price}) => acc + price, 0);
         const TAX_TOTAL = NEW_SUBTOTAL * TAX_RATE;
         const NEW_SHIPPING = NEW_SUBTOTAL ? SHIPPING : 0;
         return {
