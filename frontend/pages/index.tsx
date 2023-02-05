@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
@@ -8,6 +8,7 @@ import { CartItem } from '@/components/CartItem';
 
 const SHIPPING = 15;
 const TAX_RATE = 0.13;
+const API_URL = 'http://localhost:3001';
 
 // Helper Function to generate a random item
 const generateRandomItem = (maxLength: number) => Math.floor(Math.random() * maxLength);
@@ -21,6 +22,7 @@ export default function Home({ lineItems = [] }) {
         ...current,
         cartItems: current.cartItems.filter(lineItems => lineItems.id !== lineItemId)
       }))
+      CART_ACTIONS.calculateFees();
     },
     addLineItem: (lineItem: number) => {
       if( lineItem > lineItems.length ) return;
@@ -28,7 +30,11 @@ export default function Home({ lineItems = [] }) {
       setCartState((current) => ({
         ...current,
         cartItems: [...current.cartItems, lineItems[lineItem]],
-      }))
+      }));
+
+      CART_ACTIONS.calculateFees();
+      if(!postalCodeRef.current) return;
+      CART_ACTIONS.estimatedDeliveryDate(postalCodeRef?.current?.value);
     },
     calculateFees: () => {
       setCartState((current) => {
@@ -49,11 +55,8 @@ export default function Home({ lineItems = [] }) {
     },
     estimatedDeliveryDate: async (postalCode: string = '') => {
       if(!postalCode) return;
-      const API_URL = 'http://localhost:3001';
-      const API_ENDPOINT = `delivery`;
-      const res = await fetch(`${API_URL}/${API_ENDPOINT}/${postalCode}`).then(res => res.json());
+      const res = await fetch(`${API_URL}/${postalCode}`).then(res => res.json());
       const estimatedDeliveryDates = await res.lineItems;
-      // console.log(estimatedDeliveryDates)/
       setCartState((current) => {
         return {
           ...current,
@@ -70,6 +73,7 @@ export default function Home({ lineItems = [] }) {
   const [cartState, setCartState] = useState<CartState>({
     cartItems: lineItems,
   });
+  const postalCodeRef = useRef<HTMLInputElement>(null);
 
   // Calculate Cart Items on initial load
   useEffect(() => {
@@ -99,17 +103,16 @@ export default function Home({ lineItems = [] }) {
             <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
             <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
             <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
-            <li><label>Postal Code</label><input onChange={(event) => {CART_ACTIONS.estimatedDeliveryDate( event.target.value )}} /></li>
+            <li><label>Postal Code</label><input type="text" ref={postalCodeRef} onChange={(event) => {CART_ACTIONS.estimatedDeliveryDate( event.target.value )}} /></li>
             <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
           </ul>
         </div>}
         <button
           onClick={()=> {
-            CART_ACTIONS.addLineItem(generateRandomItem(cartState.cartItems.length));
-            CART_ACTIONS.calculateFees();
+            CART_ACTIONS.addLineItem(generateRandomItem(lineItems.length));
           }}
         >
-          Add
+          Add New Item
         </button>
         
       </main>
@@ -119,10 +122,8 @@ export default function Home({ lineItems = [] }) {
 
 export async function getServerSideProps() {
   // Fetch data from external API
-  const API_URL = 'http://localhost:3001';
-  const API_ENDPOINT = '';
   
-  const res = await fetch(`${API_URL}/${API_ENDPOINT}`);
+  const res = await fetch(`${API_URL}`);
   const data = await res.json()
 
   // Pass data to the page via props
