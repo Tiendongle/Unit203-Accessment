@@ -68,13 +68,10 @@ const DELIVERY_DATES = [
   },
 ]
 
-app.get('/', (req, res) => {
-  res.send(lineItems);
-});
+app.get('/:postal?', (req, res) => {
+  const postal = req?.params?.postal?.toUpperCase();
+  if (!postal) res.send(lineItems);
 
-app.get('/delivery/:postal', (req, res) => {
-  const postal = req.params.postal.toUpperCase() || 'V5N';
-  
   // Filter Delivery Time Based on postal code
   const DELIVERY_AREA_DATA = DELIVERY_DATES.filter( deliveryAreas => deliveryAreas.postal === postal[0]);
 
