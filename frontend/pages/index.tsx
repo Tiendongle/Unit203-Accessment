@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Head from 'next/head'
-import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.scss'
 
 import { CartState, CartItemProps } from '@/types';
@@ -66,7 +65,7 @@ export default function Home({ lineItems = [] }) {
         }
       })
     }
-  }), []);
+  }), [lineItems]);
 
   // Basic State function. Should be converted to use Actions and Reducer given more time.
   const [cartState, setCartState] = useState<CartState>({
