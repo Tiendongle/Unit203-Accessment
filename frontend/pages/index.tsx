@@ -89,32 +89,34 @@ export default function Home({ lineItems = [] }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <h1>Your Cart</h1>
-        {cartState?.cartItems && <div className={styles.cart}>
-          {
-            cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={() => {
-              CART_ACTIONS.removeLineItem(key);
-              CART_ACTIONS.calculateFees();
-            }} />)
-          }
-        </div>}
-        {cartState.price && <div className={styles.pricingData}>
-          <ul>
-            <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
-            <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
-            <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
-            <li><label>Postal Code</label><input type="text" ref={postalCodeRef} onChange={(event) => {CART_ACTIONS.estimatedDeliveryDate( event.target.value )}} /></li>
-            <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
-          </ul>
-        </div>}
+        <h1 className={styles.title}>Your Cart</h1>
+        { cartState?.cartItems &&
+          <div className={styles.cart}>
+            {
+              cartState.cartItems.map(( cartItem, key ) => <CartItem key={key} {...cartItem} removeItemFunction={() => {
+                CART_ACTIONS.removeLineItem(key);
+                CART_ACTIONS.calculateFees();
+              }} />)
+            }
+          </div>
+        }
         <button
-          onClick={()=> {
-            CART_ACTIONS.addLineItem(generateRandomItem(lineItems.length));
-          }}
+          className={styles.addItem_Btn}
+          onClick={()=> { CART_ACTIONS.addLineItem(generateRandomItem(lineItems.length)) }}
         >
           Add New Item
         </button>
-        
+        { cartState.price && 
+          <div className={styles.pricingData}>
+            <ul>
+              <li><p>Subtotal</p><p>${cartState.price.subtotal.toFixed(2)}</p></li>
+              <li><p>Taxes (estimated)</p><p>${cartState.price.taxes.toFixed(2)}</p></li>
+              <li><p>Shipping</p><p>${cartState.price.shipping.toFixed(2)}</p></li>
+              <li><label>Postal Code</label><input type="text" ref={postalCodeRef} onChange={(event) => {CART_ACTIONS.estimatedDeliveryDate( event.target.value )}} /></li>
+              <li className={styles.pricingData_totals}><p>Total</p><p>{cartState.price.total.toFixed(2)}</p></li>
+            </ul>
+          </div>
+        }
       </main>
     </>
   )

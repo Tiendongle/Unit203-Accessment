@@ -1,4 +1,4 @@
-import styles from '@/styles/CartItems.module.css'
+import styles from '@/styles/CartItems.module.scss'
 
 import { CartItemProps } from "@/types"
 import Image from 'next/image'

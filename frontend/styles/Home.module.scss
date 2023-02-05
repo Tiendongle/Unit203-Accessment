@@ -1,10 +1,13 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: flex-start;
   padding: 6rem;
   min-height: 100vh;
+}
+
+.title {
+  color: var(--BLUE);
 }
 
 .cart {
@@ -14,6 +17,20 @@
 
 .pricingData {
   width: 100%;
+}
+
+.addItem_Btn {
+  background-color: transparent;
+  border: 1px var(--BLUE) solid;
+  border-radius: 12px;
+  padding: 8px 16px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: lightgrey;
+  }
 }
 
 .pricingData ul {
